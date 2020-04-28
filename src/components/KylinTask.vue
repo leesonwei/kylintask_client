@@ -117,7 +117,7 @@
 <el-dialog
   title="create cron task"
   :visible.sync="dialogVisible"
-  fullscreen="true"
+  width="70%"
   :before-close="handleClose">
   <span>
   <el-form ref="form" :model="form" label-width="120px">
