@@ -16,9 +16,13 @@
 export default {
   data () {
     return {
+      activeIndex: '2'
     }
   },
   methods: {
+    handleSelect (key, keyPath) {
+      console.log(key, keyPath)
+    }
   }
 }
 </script>

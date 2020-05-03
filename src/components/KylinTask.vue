@@ -4,9 +4,9 @@
       <el-row>
         <el-col :span="4">
           <el-form-item label="potocol">
-            <el-select size="small" v-model="value" default-first-option="true">
+            <el-select size="small" v-model="form.potocol">
               <el-option
-                v-for="item in options"
+                v-for="item in potocols"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -16,7 +16,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item size="small" label="KYLIN Server">
-            <el-input v-model="form.url"></el-input>
+            <el-input v-model="form.host"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="4">
@@ -38,245 +38,90 @@
           </el-form-item>
         </el-col>
         <el-col :span="4" style="text-align:right; padding-left:20px">
-          <el-button size="small" type="primary" @click="onSubmit">connect</el-button>
+          <el-button size="small" type="primary" @click="connect">connect</el-button>
         </el-col>
+        <div>{{number}}</div>
       </el-row>
     </el-form>
     <el-divider></el-divider>
-    <el-tabs type="border-card">
-      <el-tab-pane label="Projects">
-        <el-table :data="projectList" border style="width: 100%">
-          <el-table-column prop="project" label="Project"></el-table-column>
-          <el-table-column prop="cube" label="Cube"></el-table-column>
-          <el-table-column prop="owner" label="Owner"></el-table-column>
-          <el-table-column prop="streaming" label="Streaming"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="100">
-            <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">Create task</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="Tasks">
-        <el-table :data="taskList" border style="width: 100%">
-          <el-table-column prop="project" label="Project"></el-table-column>
-          <el-table-column prop="cube" label="Cube"></el-table-column>
-          <el-table-column prop="owner" label="Owner"></el-table-column>
-          <el-table-column prop="streaming" label="Streaming"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="100">
-            <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">创建</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="Monitor">
-        <el-table :data="jobList" border style="width: 100%">
-          <el-table-column prop="project" label="Project"></el-table-column>
-          <el-table-column prop="cube" label="Cube"></el-table-column>
-          <el-table-column prop="owner" label="Owner"></el-table-column>
-          <el-table-column prop="streaming" label="Streaming"></el-table-column>
-          <el-table-column fixed="right" label="options" width="100">
-            <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">Create task</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-    </el-tabs>
-
-    <el-dialog
-      title="create cron task"
-      :visible.sync="dialogVisible"
-      width="70%"
-      :before-close="handleClose"
-    >
-      <span>
-        <el-form ref="form" :model="form" label-width="120px">
-          <el-form-item label="task name">
-            <el-input v-model="form.name" disabled="true" placeholder="task name auto generate"></el-input>
-          </el-form-item>
-
-          <el-row style="height:60px;">
-            <el-col :span="8">
-              <el-form-item class="width-full" label="type">
-                <el-select v-model="value" placeholder="请选择type">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item class="width-full" label="cube">
-                <el-select v-model="value" placeholder="请选择cube">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item class="width-full" label="segments">
-                <el-select v-model="value" placeholder="请选择segments">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-
-          <el-form-item label="有效时间">
-            <el-col class="text-left" :span="2">
-              <el-switch v-model="form.delivery"></el-switch>
-            </el-col>
-            <el-col :span="22">
-              <el-date-picker
-                style="width:100%"
-                v-model="value1"
-                type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              ></el-date-picker>
-            </el-col>
-          </el-form-item>
-          <el-form-item label="cron express">
-            <el-input v-model="form.cron_express" placeholder="请选择cron"></el-input>
-          </el-form-item>
-          <el-form-item label="resume">
-            <el-col :span="2" class="text-left">
-              <el-switch v-model="form.delivery"></el-switch>
-            </el-col>
-            <el-col :span="22" class="text-left">
-              <el-input v-model="form.resume_times" placeholder="resume times"></el-input>
-            </el-col>
-          </el-form-item>
-          <el-form-item label="desc">
-            <el-input type="textarea" v-model="form.desc"></el-input>
-          </el-form-item>
-        </el-form>
-      </span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onSubmit">确 定</el-button>
-      </span>
-    </el-dialog>
+    <el-table :data="projectList" border style="width: 100%">
+      <el-table-column prop="uuid" label="UUID" width="220"></el-table-column>
+      <el-table-column prop="name" label="NAME" width="220"></el-table-column>
+      <el-table-column prop="version" label="VERSION" width="180"></el-table-column>
+      <el-table-column prop="description" label="DESCRIPTION"></el-table-column>
+      <el-table-column
+      fixed="right"
+      label="操作"
+      width="100">
+      <template slot-scope="scope">
+        <el-button @click="handleClick(scope.row)" type="text" size="small">Create Task</el-button>
+      </template>
+    </el-table-column>
+    </el-table>
+    <CreateTask :createTaskVisiable="visiable"></CreateTask>
   </div>
 </template>
 
 <script>
+import CreateTask from '@/components/commons/createTask'
 export default {
-  components: {},
+  components: { CreateTask },
+  computed: {
+    number () {
+      return this.$store.state.count
+    }
+  },
   data () {
     return {
-      dialogVisible: false,
-      row: {},
+      visiable: false,
       form: {
-        url: "",
-        username: "",
-        password: ""
+        potocol: '',
+        host: '',
+        port: '',
+        username: '',
+        password: ''
       },
-      projectList: [
+      potocols: [
         {
-          project: "2016-05-02",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
+          value: 'HTTP',
+          label: 'HTTP'
         },
         {
-          project: "2016-05-04",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-01",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-03",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
+          value: 'HTTPS',
+          label: 'HTTPS'
         }
       ],
-      taskList: [
-        {
-          project: "2016-05-02",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-04",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-01",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-03",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        }
-      ],
-      jobList: [
-        {
-          project: "2016-05-02",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-04",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-01",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        },
-        {
-          project: "2016-05-03",
-          cube: "王小虎",
-          owner: "王小虎",
-          streaming: "王小虎"
-        }
-      ]
+      projectList: [{
+        uuid: '2016-05-02',
+        name: '王小虎',
+        version: '3.0.0.1',
+        description: '上海市普陀区金沙江路'
+      }]
     }
   },
   methods: {
-    onSubmit () {
-      console.log("submit!")
-      this.dialogVisible = false
+    connect () {
+      var _this = this
+      this.$http
+        .post('/kylinweb/connect', this.form)
+        .then(function (response) {
+          var result = response.data
+          // eslint-disable-next-line eqeqeq
+          if (result.status == 0) {
+            console.log(result.data)
+          } else {
+            _this.$message(result.status + ':' + result.msg)
+          }
+        })
+        .catch(function (error) {
+          var result = error.data
+          _this.$message(result.status + ':' + result.msg)
+        })
     },
+    showErr () {},
     handleClick (row) {
-      this.row = row
-      this.dialogVisible = true
+      console.log(row)
+      this.visiable = true
     }
   }
 }

@@ -13,15 +13,16 @@
 </template>
 
 <script>
-import Header from "@/components/commons/header";
-import Footer from "@/components/commons/footer";
+import Header from '@/components/commons/header'
+import Footer from '@/components/commons/footer'
+
 export default {
-  data() {
-    return {};
+  data () {
+    return {}
   },
   components: { Header, Footer },
   methods: {}
-};
+}
 </script>
 
 <style>
