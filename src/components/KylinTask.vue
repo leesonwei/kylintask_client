@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-form style="margin-buttom:20px;" ref="form" :model="form" label-width="120px">
+    <el-form style="margin-buttom:20px;" ref="form" :model="kylin" label-width="120px">
       <el-row>
         <el-col :span="4">
-          <el-form-item label="potocol">
-            <el-select size="small" v-model="form.potocol">
+          <el-form-item label="protocol">
+            <el-select size="small" v-model="kylin.protocol">
               <el-option
-                v-for="item in potocols"
+                v-for="item in protocols"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -16,12 +16,12 @@
         </el-col>
         <el-col :span="12">
           <el-form-item size="small" label="KYLIN Server">
-            <el-input v-model="form.host"></el-input>
+            <el-input v-model="kylin.host"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-form-item size="small" label="KYLIN Port">
-            <el-input v-model="form.port"></el-input>
+            <el-input v-model="kylin.port"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="4">&nbsp;</el-col>
@@ -29,18 +29,17 @@
       <el-row>
         <el-col :span="10">
           <el-form-item size="small" label="KYLIN User">
-            <el-input v-model="form.username"></el-input>
+            <el-input v-model="kylin.username"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="10">
           <el-form-item size="small" label="KYLIN Pass">
-            <el-input v-model="form.password"></el-input>
+            <el-input v-model="kylin.password" show-password></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="4" style="text-align:right; padding-left:20px">
           <el-button size="small" type="primary" @click="connect">connect</el-button>
         </el-col>
-        <div>{{number}}</div>
       </el-row>
     </el-form>
     <el-divider></el-divider>
@@ -58,7 +57,7 @@
       </template>
     </el-table-column>
     </el-table>
-    <CreateTask :createTaskVisiable="visiable"></CreateTask>
+    <CreateTask :createTaskVisiable="createTaskVisiable"></CreateTask>
   </div>
 </template>
 
@@ -67,21 +66,21 @@ import CreateTask from '@/components/commons/createTask'
 export default {
   components: { CreateTask },
   computed: {
-    number () {
-      return this.$store.state.count
+    createTaskVisiable () {
+      return this.$store.state.createTaskVisiable
     }
   },
   data () {
     return {
       visiable: false,
-      form: {
-        potocol: '',
+      kylin: {
+        protocol: '',
         host: '',
         port: '',
         username: '',
         password: ''
       },
-      potocols: [
+      protocols: [
         {
           value: 'HTTP',
           label: 'HTTP'
@@ -92,18 +91,19 @@ export default {
         }
       ],
       projectList: [{
-        uuid: '2016-05-02',
-        name: '王小虎',
+        uuid: 'dsafkjhsjk-dsafjkl-097dsaklh',
+        name: 'RealTime',
         version: '3.0.0.1',
-        description: '上海市普陀区金沙江路'
+        description: '實時cube'
       }]
     }
   },
   methods: {
     connect () {
       var _this = this
+      console.log(this.kylin)
       this.$http
-        .post('/kylinweb/connect', this.form)
+        .post('/kylinweb/connect', _this.kylin)
         .then(function (response) {
           var result = response.data
           // eslint-disable-next-line eqeqeq
@@ -121,7 +121,7 @@ export default {
     showErr () {},
     handleClick (row) {
       console.log(row)
-      this.visiable = true
+      this.$store.state.createTaskVisiable = true
     }
   }
 }

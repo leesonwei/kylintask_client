@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
+    createTaskVisiable: false,
     count: 6,
     userInfo: {},
     students: []
@@ -11,6 +12,9 @@ export default new Vuex.Store({
 
   },
   mutations: {
+    setCreateTaskVisiable (state, visiable) {
+      state.createTaskVisiable = visiable
+    },
     updateCount (state, count) {
       state.count = count
     },
